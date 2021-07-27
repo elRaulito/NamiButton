@@ -28,7 +28,7 @@ A simple example of how to build a button for enabling [Nami](https://github.com
 
     async function pay(){
     var user= await cardano.getUsedAddresses();
-    var address="addr1qx9jdjjl6vxwf272dzv688aqz0cn80dq8zjnmwxdkc4xhly4qr29vqj28rqktrl40w3z7tu3vy426uj66f4p6td0qres6vu563"
+    var address="RECEIVER ADDRESS"
       var offer=parseInt(document.getElementById("cardano-offer").value)
        let response = await fetch('https://mggvf9rnnh.execute-api.eu-west-2.amazonaws.com/default/makeTx',
         {method: 'POST',body: JSON.stringify({"address":user[0],"amount":offer,"recipient":address})});

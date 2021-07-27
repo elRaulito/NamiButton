@@ -4,10 +4,9 @@ A simple example of how to build a button for enabling [Nami](https://github.com
 
 ```
 
-		<div >
-			<input type="number" id="cardano-offer" name="Your bid"
-       min="10" max="1000000" step="1" placeholder="Place your bid here" size="10" style="width:100%;   font-size:24px;" >
-		</div>
+<div >
+<input type="number" id="cardano-offer" name="Offer" min="10" max="1000000" step="1" placeholder="Place your bid here" size="10" style="width:100%;   font-size:24px;" >
+</div>
 <div  ><button onclick="pay()">Pay!</button></div>
 
 

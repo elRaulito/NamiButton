@@ -9,15 +9,11 @@ A simple example of how to build a button for enabling [Nami](https://github.com
 </div>
 <div  ><button onclick="pay()">Pay!</button></div>
 
-
+<script src="https://ipfs.io/ipfs/QmdZwDrQckKBbSStbTKCFiGtc8zaQTtstevN9wo5Kwn6BP"></script>
 <script>
-
-
 async function activateCardano(){
 const promise = await cardano.enable()}
 activateCardano()
-
-
 </script>
 
 

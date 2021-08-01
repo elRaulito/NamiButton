@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+<script src="bech32.js"></script>
+
+<script type="module" src="cardano_serialization_lib_bg.js"></script>
+<script src="chrome-extension://lpfcbjknijpeeillifnkikgncikgfhdo/injected.bundle.js">
+     </script>
+<script type="module">
+
+import {TransactionUnspentOutput} from './cardano_serialization_lib.js';
+
+function toHexString(byteArray) {
+  return Array.from(byteArray, function(byte) {
+    return ('0' + (byte & 0xFF).toString(16)).slice(-2);
+  }).join('')
+}
+
+  function parseHexString(str) {
+      var result = [];
+      while (str.length >= 2) {
+          result.push(parseInt(str.substring(0, 2), 16));
+
+          str = str.substring(2, str.length);
+      }
+
+      return result;
+  }
+
+  function hex2a(hexx) {
+      var hex = hexx.toString();//force conversion
+      var str = '';
+      for (var i = 0; i < hex.length; i += 2)
+          str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+      return str;
+  }
+
+  cardano.enable()
+
+async function test(){
+  let utxos = (await window.cardano.getUtxos()).map((utxo) =>
+     TransactionUnspentOutput.from_bytes(
+       Buffer.Buffer.from(utxo, "hex")
+     )
+  )
+  var balance=0
+  utxos.forEach((tx) => {
+
+    var table = document.getElementById("firstTabOverall");
+    function addCell(tr, text) {
+           var td = tr.insertCell();
+           td.bored="1 px"
+           td.textContent = text;
+           return td;
+       }
+
+
+      var txid=toHexString(tx.input().transaction_id().to_bytes())+" #"+tx.input().index()
+      var ada=tx.output().amount().coin().to_str()
+      var assets=""
+
+      var money=toHexString(tx.input().transaction_id().to_bytes())+" #"+tx.input().index()+"  "+tx.output().amount().coin().to_str()+" adalace"
+
+      try{
+      for (let i = 0; i < tx.output().amount().multiasset().len(); i++) {
+       var key=tx.output().amount().multiasset().keys().get(i).to_bytes()
+       var key_raw=tx.output().amount().multiasset().keys().get(i)
+            for (let j=0;j<tx.output().amount().multiasset().get(key_raw).len();j++){
+              var asset_key=tx.output().amount().multiasset().get(key_raw).keys().get(j)
+              var asset=hex2a(toHexString(tx.output().amount().multiasset().get(key_raw).keys().get(j).name()))
+              var amount=tx.output().amount().multiasset().get(key_raw).get(asset_key).to_str()
+              assets=assets+" +"+amount+" "+toHexString(key)+"."+asset
+              money=money+" +"+amount+" "+toHexString(key)+"."+asset
+            }
+
+      }
+    }catch(error){
+        console.log("no assets")
+      }
+      console.log(money)
+      balance=balance+parseInt(tx.output().amount().coin().to_str())
+
+      var row = table.insertRow();
+      addCell(row, txid);
+      addCell(row, ada);
+      addCell(row, assets);
+
+
+  });
+  balance=balance/1000000
+  var address=utxos[0].output().address().to_bech32()
+  document.getElementById("amount").innerHTML="Total ADA= "+balance+" address: "+address
+
+  console.log("Total ADA= "+balance+" address: "+address)
+
+
+}
+test()
+
+</script>
+<h id="amount"></h>
+<div class="col-md-6">
+    <table id="firstTabOverall" class="table table-striped" style="font-size:13px;   border: 1px solid black; ">
+      <tr>
+  <th>TX</th>
+  <th>ADA</th>
+  <th>ASSETS</th>
+</tr>
+    </table>
+</div>
+  </body>
+</html>

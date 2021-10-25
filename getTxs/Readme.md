@@ -5,7 +5,15 @@ Well in this example if Nami is enabled you create a Table with transactions ids
 The example decodes the address in human readable form (bech32) and display the amount of ADA available
 
 
-Everything is done in javascript, have fun and don't forget to check our projects:
+Everything is done in javascript, have fun 
+
+
+
+
+
+
+
+if you would like to contribute the research you can check our NFT projects:
 
 https://jurassikchained.com/
 

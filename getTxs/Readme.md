@@ -8,4 +8,5 @@ The example decodes the address in human readable form (bech32) and display the 
 Everything is done in javascript, have fun and don't forget to check our projects:
 
 https://jurassikchained.com/
+
 https://cardanowaifus.digital/ (it's @cardano_waifus on twitter)

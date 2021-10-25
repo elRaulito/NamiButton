@@ -17,4 +17,3 @@ if you would like to contribute the research you can check our NFT projects:
 
 https://jurassikchained.com/
 
-https://cardanowaifus.digital/ (it's @cardano_waifus on twitter)

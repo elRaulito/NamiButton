@@ -1,0 +1,53 @@
+
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+<script src="https://ipfs.io/ipfs/QmdZwDrQckKBbSStbTKCFiGtc8zaQTtstevN9wo5Kwn6BP"></script>
+<script src="chrome-extension://lpfcbjknijpeeillifnkikgncikgfhdo/injected.bundle.js">
+     </script>
+<script type="module">
+function buf2hex(buffer) { // buffer is an ArrayBuffer
+  return [...new Uint8Array(buffer)]
+      .map(x => x.toString(16).padStart(2, '0'))
+      .join('');
+}
+
+  const api=await cardano.nami.enable()
+console.log(cbor)
+async function test(){
+  console.log("hello")
+  const rawCbor="84A40081825820F83E82190D6A647BD55EEA8857335C602D59CBD9DBD6CFE1580EA27548C46B36000182825839013FD56000DBDEB345F92B7924496E17D858F7F257E3F30212309E2F858AE9CDCE3DDC1E36C4FD567AF5AA0380E50B4BD1F0E253B50EF158081A0274D381825839013FD56000DBDEB345F92B7924496E17D858F7F257E3F30212309E2F858AE9CDCE3DDC1E36C4FD567AF5AA0380E50B4BD1F0E253B50EF158081A001E8480021A00029FED09A1581CF4A98A37D98833A19BDF0500ED4E81D55C748FDD9D64E765F93F5535A148494341525553323720A101818201828200581C3FD56000DBDEB345F92B7924496E17D858F7F257E3F30212309E2F8582051A062F791AF5F6"
+  //bisogna generare il cbor non in alonzo era!!
+  var witness=await api.signTx(rawCbor,false)
+  console.log(witness)
+  const decoded_complete = cbor.decode(rawCbor)//output non firmato
+  console.log(decoded_complete)
+  const decoded_signed=cbor.decode(witness)//qua ho la firma
+  console.log(decoded_signed)
+  decoded_complete.splice(1, 1, decoded_signed);//unisco
+  console.log(decoded_complete)
+  const encoded_final=cbor.encode(decoded_complete)
+  //console.log(encoded_final)
+  const output=buf2hex(encoded_final)
+  console.log(output)
+  const hash=await api.submitTx(output)
+  console.log(hash)
+}
+test()
+
+</script>
+<h id="amount"></h>
+<div class="col-md-6">
+    <table id="firstTabOverall" class="table table-striped" style="font-size:13px;   border: 1px solid black; ">
+      <tr>
+  <th>TX</th>
+  <th>ADA</th>
+  <th>ASSETS</th>
+</tr>
+    </table>
+</div>
+  </body>
+</html>

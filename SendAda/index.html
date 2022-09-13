@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <style>
+    .button {
+      background-color: #ddd;
+      border: none;
+      color: black;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 16px;
+      width: 100%
+    }
+
+    .button1 {background-color: #7afa9c;} /* white */
+    .button2 {background-color: #008CBA;} /* Blue */
+
+    </style>
+    <script src="bech32.js"></script>
+
+    <script type="module" src="cardano_serialization_lib_bg.js"></script>
+         </script>
+    <script type="module">
+
+    import {TransactionUnspentOutput,Transaction,TransactionWitnessSet ,TransactionUnspentOutputs, TransactionBuilder,TransactionBuilderConfigBuilder,LinearFee,BigNum  ,TransactionOutputBuilder, Address ,CoinSelectionStrategyCIP2  } from './cardano_serialization_lib.js';
+
+    //important instead of nami here it should be the wallet used to connect
+
+
+    //here the protocol params
+
+    async function pay(){
+    const api= await cardano['nami'].enable()
+    const txBuilderConfig =TransactionBuilderConfigBuilder.new()
+        .fee_algo(LinearFee.new(
+          BigNum.from_str("44"),
+          BigNum.from_str("155381")
+        ))
+        .pool_deposit(BigNum.from_str("500000000"))
+        .key_deposit(BigNum.from_str("2000000"))
+        .max_tx_size(16384)
+        .max_value_size(5000)
+        .coins_per_utxo_word(BigNum.from_str("34482"))
+        .build()
+
+        const txBuilder = TransactionBuilder.new(txBuilderConfig);
+
+
+
+        // Create and add outputs
+
+        const txOut = TransactionOutputBuilder.new()
+          .with_address(Address.from_bech32("addr1vxcv899n9w76ca6s83kfkxw2yadeha7rqh3vwzzyu5004lqng6snf"))
+          .next()
+          .with_coin(BigNum.from_str("5000000"))
+          .build();
+
+        txBuilder.add_output(txOut);
+
+        // Create and add Inputs
+        const utxos = await api.getUtxos();
+        const utxosFromWalletConnector = (await api.getUtxos()).map((utxo) =>
+      TransactionUnspentOutput.from_bytes(Buffer.Buffer.from(utxo, "hex"))
+    );
+
+    const utxoOutputs = TransactionUnspentOutputs.new();
+    utxosFromWalletConnector.map((currentUtxo) => {
+      utxoOutputs.add(currentUtxo);
+    });
+
+        txBuilder.add_inputs_from(utxoOutputs, CoinSelectionStrategyCIP2.LargestFirst);
+
+        // Add change and fees
+
+        var addressOwner=utxosFromWalletConnector[0].output().address().to_bech32();
+        txBuilder.add_change_if_needed(Address.from_bech32(addressOwner));
+
+        // Build transaction
+        const txBody = txBuilder.build();
+
+        const unsignedTx = Transaction.new(
+          txBody,
+          TransactionWitnessSet.new()
+        );
+
+
+        const witness = await api.signTx(
+      Buffer.Buffer.from(unsignedTx.to_bytes(), "hex").toString("hex")
+    );
+
+    const signedTx = Transaction.new(
+      txBody,
+      TransactionWitnessSet.from_bytes(Buffer.Buffer.from(witness, "hex")),
+      undefined // transaction metadata
+    );
+
+    const txHash = await api.submitTx(
+      Buffer.Buffer.from(signedTx.to_bytes()).toString("hex")
+    );
+
+
+    console.log(TransactionBuilder)
+    }
+
+    window.pay=pay;
+
+    </script>
+
+  </head>
+  <body>
+
+<h id="amount"></h>
+<div class="col-md-6">
+
+
+<button class="button button1" onclick="window.pay()">Start accumulating</button>
+</body>
+</div>
+</html>

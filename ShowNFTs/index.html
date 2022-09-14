@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <style>
+    .button {
+      background-color: #ddd;
+      border: none;
+      color: black;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 16px;
+      width: 100%
+    }
+
+    .button1 {background-color: #7afa9c;} /* white */
+    .button2 {background-color: #008CBA;} /* Blue */
+
+    </style>
+    <script src="bech32.js"></script>
+
+    <script type="module" src="cardano_serialization_lib_bg.js"></script>
+         </script>
+    <script type="module">
+
+    import {TransactionUnspentOutput,Transaction,TransactionWitnessSet ,TransactionUnspentOutputs, TransactionBuilder,TransactionBuilderConfigBuilder,LinearFee,BigNum  ,TransactionOutputBuilder, Address ,CoinSelectionStrategyCIP2  } from './cardano_serialization_lib.js';
+
+    //important instead of nami here it should be the wallet used to connect
+
+
+    //here the protocol params
+
+    const api= await cardano['nami'].enable()
+
+
+
+//store the address in a variable
+   const addresses= await api.getUsedAddresses()
+  window.owner=Address.from_bytes(Buffer.Buffer.from(addresses[0], 'hex')).to_bech32();
+  //window.owner="addr1q9cnz0gtnk4mgqsw89445xwtwh90emuwrccn2uhesmcn2wfdfc935c2jrhfxvj5w65r80gj2604yqke87h7p8yn7pm8smd445x"
+ console.log(window.owner)
+ var requestOptions = {
+   method: 'GET',
+   redirect: 'follow'
+ };
+
+ fetch("https://5xbvoguy36.execute-api.eu-west-2.amazonaws.com/default/MDCC-getNfts?address="+window.owner, requestOptions)
+   .then(response=>populate(response)).then(result => console.log(result)).catch(error => console.log('error', error));
+
+  async function populate(input){
+    var data=await input.json();
+   document.getElementById('paragrafo-dinamico').innerHTML=""
+   console.log(Object.keys(data).length)
+   Object.keys(data).forEach(function(k){
+       console.log(data[k]['image']);
+       console.log(data[k]['name']);
+   var ipfs=data[k]['image']
+   var ret = data[k]['image'].replace('ipfs://','');
+   var link='https://nftstorage.link/ipfs/'+ret;
+       var div = document.createElement('div');
+       div.id = data[k]['name'];
+       div.style.display = 'inline-block'
+       div.style.margin="10px 10px 10px 10px";
+       div.innerHTML = "<img src="+link+" alt="+data[k]["name"]+" width=\"250\" height=\"250\">"
+       div.innerHTML=div.innerHTML+"<p style=\"text-align:center\">"+data[k]["name"]+"</p> "
+       div.innerHTML=div.innerHTML+"<p style=\"text-align:center\">"+data[k]["name"]+"</p> "
+     document.getElementById('paragrafo-dinamico').appendChild(div);})
+}
+
+
+console.log(window.owner)
+
+    </script>
+
+
+  </head>
+  <body>
+
+<h id="amount"></h>
+<div class="col-md-6" id="paragrafo-dinamico">
+
+</body>
+</div>
+</html>

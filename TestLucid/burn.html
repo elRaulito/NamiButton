@@ -1,0 +1,58 @@
+
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <script type="module">
+import { Lucid , Blockfrost,utf8ToHex } from "https://unpkg.com/lucid-cardano@0.6.0/web/mod.js"
+const lucid = await Lucid.new(
+  new Blockfrost("https://cardano-preview.blockfrost.io/api/v0", "previewHiGlO00SPw5OYGCX0JXHwsyrvHFWZCgG"),
+  "Testnet",
+);
+
+const api = await window.cardano.eternl.enable();
+lucid.selectWallet(api);
+
+const { paymentCredential } = lucid.utils.getAddressDetails(
+  await lucid.wallet.address(),
+);
+
+
+var mintingPolicy = lucid.utils.nativeScriptFromJson({
+    type: "all",
+    scripts: [
+        { type: "sig", keyHash: paymentCredential === null || paymentCredential === void 0 ? void 0 : paymentCredential.hash },
+        {
+            type: "before",
+            slot: 67191725,
+        },
+    ],
+});
+
+var policyId = lucid.utils.mintingPolicyToId(mintingPolicy);
+
+
+  //here the policyID to burn
+  var unit = policyId + utf8ToHex("testNFT");
+
+
+  const tx = await lucid
+    .newTx()
+    .mintAssets({ [unit]: -1n })
+    .validTo(Date.now() + 100000)
+    .attachMintingPolicy(mintingPolicy)
+    .complete();
+
+  const signedTx = await tx.sign().complete();
+
+  const txHash = await signedTx.submit();
+
+  console.log(txHash)
+
+
+</script>
+
+  </body>
+</html>
